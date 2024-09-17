@@ -42,12 +42,76 @@
 
 // Your component has already been rendered to the DOM inside of a #root div directly in the body with the CSS imported.
 
-import React from "react";
+import React, { useEffect, useState } from "react";
+import data from "../data.json";
 
-const QUIZ_API_BASE_URL = "https://api.frontendexpert.io/api/fe/quiz";
+type QuestionData = {
+  question: string;
+  answers: string[];
+  correctAnswer: number;
+};
+
+// const QUIZ_API_BASE_URL = "https://api.frontendexpert.io/api/fe/quiz";
 
 export default function Quiz() {
-  // Write your code here.
+  const [questions, setQuestions] = useState<QuestionData[]>(data);
+  const [questionNumber, setQuestionNumber] = useState<number>(0);
+  const currentQuestion = questions[questionNumber];
 
-  return <>{/* Write your code here. */}</>;
+  //   const getQuestionData = async () => {
+  //     const rawData = await fetch(QUIZ_API_BASE_URL);
+  //     const jsonData = await rawData.json();
+  //     setQuestions(jsonData);
+  //   };
+
+  //   useEffect(() => {
+  // getQuestionsData()
+  //   }, []);
+
+  return (
+    <>
+      <h1>{currentQuestion.question}</h1>
+
+      {currentQuestion.answers.map((answer, i) => {
+        return (
+          <Answer
+            answer={answer}
+            currentQuestion={currentQuestion}
+            answerNumber={i}
+          />
+        );
+      })}
+
+      <button disabled>Back</button>
+      <button>Next</button>
+    </>
+  );
+}
+
+function Answer({
+  answer,
+  currentQuestion,
+  answerNumber,
+}: {
+  answer: string;
+  currentQuestion: QuestionData;
+  answerNumber: number;
+}) {
+  const [answerClass, setAnswerClass] = useState("answer");
+
+  const buttonClick = () => {
+    if (answerNumber === currentQuestion.correctAnswer) {
+      setAnswerClass("answer correct");
+    } else {
+      setAnswerClass("answer incorrect");
+    }
+  };
+
+  return (
+    <>
+      <h2 onClick={buttonClick} className={answerClass} key={answer}>
+        {answer}
+      </h2>
+    </>
+  );
 }

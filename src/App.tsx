@@ -1,10 +1,10 @@
 import "./App.css";
-import BitcoinPriceConverter from "./BitCoinPriceConverter";
+import Quiz from "./Quiz";
 
 export default function App() {
   return (
     <main>
-      <BitcoinPriceConverter />
+      <Quiz />
     </main>
   );
 }
