@@ -51,12 +51,21 @@ type QuestionData = {
   correctAnswer: number;
 };
 
+type AnswerProps = {
+  answerOption: string;
+  currentQuestion: QuestionData;
+  answerOptionNumber: number;
+  answerClicked: number | undefined;
+  setAnswerClicked: React.Dispatch<React.SetStateAction<number | undefined>>;
+};
+
 // const QUIZ_API_BASE_URL = "https://api.frontendexpert.io/api/fe/quiz";
 
 export default function Quiz() {
   const [questions, setQuestions] = useState<QuestionData[]>(data);
   const [questionNumber, setQuestionNumber] = useState<number>(0);
-  const currentQuestion = questions[questionNumber];
+  const [answerClicked, setAnswerClicked] = useState<number | undefined>();
+  const currentQuestionData = questions[questionNumber];
 
   //   const getQuestionData = async () => {
   //     const rawData = await fetch(QUIZ_API_BASE_URL);
@@ -70,47 +79,60 @@ export default function Quiz() {
 
   return (
     <>
-      <h1>{currentQuestion.question}</h1>
+      <h1>{currentQuestionData.question}</h1>
 
-      {currentQuestion.answers.map((answer, i) => {
+      {currentQuestionData.answers.map((answerOption, i) => {
         return (
           <Answer
-            answer={answer}
-            currentQuestion={currentQuestion}
-            answerNumber={i}
+            key={answerOption}
+            answerOption={answerOption}
+            currentQuestion={currentQuestionData}
+            answerOptionNumber={i}
+            answerClicked={answerClicked}
+            setAnswerClicked={setAnswerClicked}
           />
         );
       })}
 
-      <button disabled>Back</button>
-      <button>Next</button>
+      <button onClick={() => setQuestionNumber((prev) => prev - 1)}>
+        Back
+      </button>
+      <button onClick={() => setQuestionNumber((prev) => prev + 1)}>
+        Next
+      </button>
     </>
   );
 }
 
 function Answer({
-  answer,
+  answerOption,
   currentQuestion,
-  answerNumber,
-}: {
-  answer: string;
-  currentQuestion: QuestionData;
-  answerNumber: number;
-}) {
+  answerOptionNumber,
+  answerClicked,
+  setAnswerClicked,
+}: AnswerProps) {
   const [answerClass, setAnswerClass] = useState("answer");
 
   const buttonClick = () => {
-    if (answerNumber === currentQuestion.correctAnswer) {
-      setAnswerClass("answer correct");
-    } else {
-      setAnswerClass("answer incorrect");
-    }
+    setAnswerClicked(answerOptionNumber);
   };
+
+  useEffect(() => {
+    if (answerClicked === answerOptionNumber) {
+      if (answerOptionNumber === currentQuestion.correctAnswer) {
+        setAnswerClass("answer correct");
+      } else {
+        setAnswerClass("answer incorrect");
+      }
+    } else {
+      setAnswerClass("answer");
+    }
+  }, [answerClicked]);
 
   return (
     <>
-      <h2 onClick={buttonClick} className={answerClass} key={answer}>
-        {answer}
+      <h2 onClick={buttonClick} className={answerClass} key={answerOption}>
+        {answerOption}
       </h2>
     </>
   );
