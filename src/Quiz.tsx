@@ -77,6 +77,20 @@ export default function Quiz() {
   // getQuestionsData()
   //   }, []);
 
+  const changeQuestion = (direction: "back" | "next") => {
+    if (direction === "back") {
+      if (questionNumber - 1 >= 0) {
+        setQuestionNumber((prev) => prev - 1);
+      }
+    } else {
+      if (questionNumber + 1 < questions.length) {
+        setQuestionNumber((prev) => prev + 1);
+      }
+    }
+    return;
+    // <button onClick={() => setQuestionNumber((prev) => prev + 1)}>
+  };
+
   return (
     <>
       <h1>{currentQuestionData.question}</h1>
@@ -94,12 +108,8 @@ export default function Quiz() {
         );
       })}
 
-      <button onClick={() => setQuestionNumber((prev) => prev - 1)}>
-        Back
-      </button>
-      <button onClick={() => setQuestionNumber((prev) => prev + 1)}>
-        Next
-      </button>
+      <button onClick={() => changeQuestion("back")}>Back</button>
+      <button onClick={() => changeQuestion("next")}>Next</button>
     </>
   );
 }
