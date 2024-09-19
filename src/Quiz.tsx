@@ -55,8 +55,9 @@ type AnswerProps = {
   answerOption: string;
   currentQuestion: QuestionData;
   answerOptionNumber: number;
-  answerClicked: number | undefined;
-  setAnswerClicked: React.Dispatch<React.SetStateAction<number | undefined>>;
+  submissionList: number[];
+  setSubmissionList: React.Dispatch<React.SetStateAction<number[]>>;
+  questionNumber: number;
 };
 
 // const QUIZ_API_BASE_URL = "https://api.frontendexpert.io/api/fe/quiz";
@@ -64,7 +65,7 @@ type AnswerProps = {
 export default function Quiz() {
   const [questions, setQuestions] = useState<QuestionData[]>(data);
   const [questionNumber, setQuestionNumber] = useState<number>(0);
-  const [answerClicked, setAnswerClicked] = useState<number | undefined>();
+  const [submissionList, setSubmissionList] = useState<number[]>([]);
   const currentQuestionData = questions[questionNumber];
 
   //   const getQuestionData = async () => {
@@ -77,7 +78,7 @@ export default function Quiz() {
   // getQuestionsData()
   //   }, []);
 
-  const changeQuestion = (direction: "back" | "next") => {
+  const changeQuestion = (direction: "back" | "next"): void => {
     if (direction === "back") {
       if (questionNumber - 1 >= 0) {
         setQuestionNumber((prev) => prev - 1);
@@ -87,8 +88,6 @@ export default function Quiz() {
         setQuestionNumber((prev) => prev + 1);
       }
     }
-    return;
-    // <button onClick={() => setQuestionNumber((prev) => prev + 1)}>
   };
 
   return (
@@ -102,14 +101,28 @@ export default function Quiz() {
             answerOption={answerOption}
             currentQuestion={currentQuestionData}
             answerOptionNumber={i}
-            answerClicked={answerClicked}
-            setAnswerClicked={setAnswerClicked}
+            submissionList={submissionList}
+            setSubmissionList={setSubmissionList}
+            questionNumber={questionNumber}
           />
         );
       })}
 
-      <button onClick={() => changeQuestion("back")}>Back</button>
-      <button onClick={() => changeQuestion("next")}>Next</button>
+      <button
+        disabled={questionNumber === 0}
+        onClick={() => changeQuestion("back")}
+      >
+        Back
+      </button>
+      <button
+        disabled={
+          questionNumber === questions.length - 1 ||
+          submissionList[questionNumber] === undefined
+        }
+        onClick={() => changeQuestion("next")}
+      >
+        Next
+      </button>
     </>
   );
 }
@@ -118,17 +131,20 @@ function Answer({
   answerOption,
   currentQuestion,
   answerOptionNumber,
-  answerClicked,
-  setAnswerClicked,
+  submissionList,
+  setSubmissionList,
+  questionNumber,
 }: AnswerProps) {
   const [answerClass, setAnswerClass] = useState("answer");
 
   const buttonClick = () => {
-    setAnswerClicked(answerOptionNumber);
+    const copy = [...submissionList];
+    copy[questionNumber] = answerOptionNumber;
+    setSubmissionList(copy);
   };
 
   useEffect(() => {
-    if (answerClicked === answerOptionNumber) {
+    if (submissionList[questionNumber] === answerOptionNumber) {
       if (answerOptionNumber === currentQuestion.correctAnswer) {
         setAnswerClass("answer correct");
       } else {
@@ -137,11 +153,11 @@ function Answer({
     } else {
       setAnswerClass("answer");
     }
-  }, [answerClicked]);
+  }, [submissionList]);
 
   return (
     <>
-      <h2 onClick={buttonClick} className={answerClass} key={answerOption}>
+      <h2 onClick={buttonClick} className={answerClass}>
         {answerOption}
       </h2>
     </>

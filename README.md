@@ -50,5 +50,7 @@ export default tseslint.config({
 ```
 
 Notes:
-Add button boundaries so that it doesn't try to go past the length of the array.
+
 Make a list of questions and selected answers so that answers persist while traversing through questions list.
+
+button disabliity
